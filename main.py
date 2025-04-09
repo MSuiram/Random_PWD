@@ -1,5 +1,7 @@
 import random as rd
 import pygame as pg
+import pygame_gui
+from pygame_gui.elements import UILabel
 import sys
 
 def creat_pwd(n_letter, n_number, n_cs):
@@ -19,16 +21,25 @@ class App:
         pg.init()
         self.size = (1200,900)
         self.screen = pg.display.set_mode(self.size)
+        self.UImanager = pygame_gui.UIManager(self.size)
+        self.Label = UILabel(
+                    relative_rect= pg.Rect(500,250,200,100),
+                    text = "Easy",
+                    manager= self.UImanager
+                    )
 
     def run(self):
         clock = pg.time.Clock()
         while True:
-            clock.tick(20)
+            time_delta = clock.tick(20)
             pg.draw.rect(self.screen, (rd.randint(0,255),rd.randint(0,255),rd.randint(0,255)), pg.Rect(0, 0, self.size[0], self.size[1]))
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     sys.exit()
+
+            self.UImanager.update(time_delta/1000)
+            self.UImanager.draw_ui(self.screen)
 
             pg.display.flip()
 
