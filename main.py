@@ -45,6 +45,10 @@ class App:
                         if event.ui_element is self.UI_n_letter[1]:
                             self.n_letter += 1
                             self.UI_n_letter[0].set_text(str(self.n_letter))
+                        if event.ui_element is self.UI_n_letter[2]:
+                            if self.n_letter > 0:
+                                self.n_letter -= 1
+                            self.UI_n_letter[0].set_text(str(self.n_letter))
 
             self.UImanager.update(time_delta/1000)
             self.UImanager.draw_ui(self.screen)
