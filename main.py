@@ -3,15 +3,18 @@ import pygame as pg
 import pygame_gui
 from pygame_gui.elements import UILabel,UIButton,UITextEntryLine
 import sys
+import pyperclip
 
 class Choice_number:
-    def __init__(self, place : list, UImanager):
+    def __init__(self, place : list, UImanager, name : str):
         self.UImanager = UImanager
         self.place = place
+        self.name = name
         self.n = 0
-        self.UI = [UILabel(relative_rect= pg.Rect(self.place[0],self.place[1],50,50),text = str(self.n),manager= self.UImanager),
-                   UIButton(relative_rect= pg.Rect(self.place[0]+50,self.place[1],50,25),text = "UP",manager= self.UImanager),
-                   UIButton(relative_rect= pg.Rect(self.place[0]+50,self.place[1]+25,50,25),text = "DOWN",manager= self.UImanager)
+        self.UI = [UILabel(relative_rect= pg.Rect(self.place[0]+50,self.place[1]+50,50,50),text = str(self.n),manager= self.UImanager),
+                   UIButton(relative_rect= pg.Rect(self.place[0]+100,self.place[1]+50,50,25),text = "UP",manager= self.UImanager),
+                   UIButton(relative_rect= pg.Rect(self.place[0]+100,self.place[1]+75,50,25),text = "DOWN",manager= self.UImanager),
+                   UILabel(relative_rect= pg.Rect(self.place[0],self.place[1],200,50),text = self.name,manager= self.UImanager)
                    ]
     
     def number(self):
@@ -29,12 +32,14 @@ class Choice_number:
 class App:
     def __init__(self):
         pg.init()
-        self.size = (1000,800)
+        self.pwd = ""
+        self.size = (1000,600)
         self.screen = pg.display.set_mode(self.size)
         self.UImanager = pygame_gui.UIManager(self.size)
-        self.UIChoice_number = [Choice_number([800,50],self.UImanager),Choice_number([800,200],self.UImanager),Choice_number([800,350],self.UImanager)]
-        self.UIButton = UIButton(relative_rect = pg.Rect(800,500,100,50), text = "Générer", manager= self.UImanager)
-        self.UILabel = UITextEntryLine(relative_rect = pg.Rect(150,350,400,100), initial_text= "Clicer sur Générer", manager= self.UImanager)
+        self.UIChoice_number = [Choice_number([750,50],self.UImanager,"Nombre de lettre"),Choice_number([750,200],self.UImanager,"Nombre de chiffre"),Choice_number([750,350],self.UImanager,"Nombre de caractère spécial")]
+        self.UIButton = UIButton(relative_rect = pg.Rect(750,500,200,50), text = "Générer", manager= self.UImanager)
+        self.UILabel = UITextEntryLine(relative_rect = pg.Rect(150,150,400,100), initial_text= "Clicer sur Générer", manager= self.UImanager)
+        self.UIPaperclip = UIButton(relative_rect = pg.Rect(150,350,400,100), text= "Copier dans le presse papier", manager= self.UImanager)
 
     def creat_pwd(self, n_letter, n_number, n_cs):
         number = [n_letter, n_number, n_cs]
@@ -68,7 +73,10 @@ class App:
                                 self.UIChoice_number[i].Down()
                         
                         if event.ui_element is self.UIButton:
-                            self.UILabel.set_text(str(self.creat_pwd(self.UIChoice_number[0].n,self.UIChoice_number[1].n,self.UIChoice_number[2].n)))
+                            self.pwd = str(self.creat_pwd(self.UIChoice_number[0].n,self.UIChoice_number[1].n,self.UIChoice_number[2].n))
+                            self.UILabel.set_text(self.pwd)
+                        if event.ui_element is self.UIPaperclip:
+                            pyperclip.copy(self.pwd)
 
             self.UImanager.update(time_delta/1000)
             self.UImanager.draw_ui(self.screen)
