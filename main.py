@@ -16,18 +16,36 @@ def creat_pwd(n_letter, n_number, n_cs):
     rd.shuffle(c)
     return "".join(c)
 
+class Choice_number:
+    def __init__(self, place : list, UImanager):
+        self.UImanager = UImanager
+        self.place = place
+        self.n = 0
+        self.UI = [UILabel(relative_rect= pg.Rect(self.place[0],self.place[1],50,50),text = str(self.n),manager= self.UImanager),
+                   UIButton(relative_rect= pg.Rect(self.place[0]+50,self.place[1],50,25),text = "UP",manager= self.UImanager),
+                   UIButton(relative_rect= pg.Rect(self.place[0]+50,self.place[1]+25,50,25),text = "DOWN",manager= self.UImanager)
+                   ]
+    
+    def number(self):
+        return self.n
+    
+    def Up(self):
+        self.n += 1
+        self.UI[0].set_text(str(self.n))
+    
+    def Down(self):
+        if self.n > 0:
+            self.n -= 1
+        self.UI[0].set_text(str(self.n))
+
 class App:
     def __init__(self):
         pg.init()
         self.size = (1000,800)
         self.screen = pg.display.set_mode(self.size)
         self.UImanager = pygame_gui.UIManager(self.size)
-        self.UI_n_letter_place = [800,350]
-        self.n_letter = 0
-        self.UI_n_letter = [UILabel(relative_rect= pg.Rect(self.UI_n_letter_place[0],self.UI_n_letter_place[1],50,50),text = str(self.n_letter),manager= self.UImanager),
-                            UIButton(relative_rect= pg.Rect(self.UI_n_letter_place[0]+50,self.UI_n_letter_place[1],50,25),text = "UP",manager= self.UImanager),
-                            UIButton(relative_rect= pg.Rect(self.UI_n_letter_place[0]+50,self.UI_n_letter_place[1]+25,50,25),text = "DOWN",manager= self.UImanager)
-                            ]
+        self.UIChoice_number = [Choice_number([800,50],self.UImanager),Choice_number([800,200],self.UImanager),Choice_number([800,350],self.UImanager)]
+
 
     def run(self):
         clock = pg.time.Clock()
@@ -42,13 +60,11 @@ class App:
 
                 if not self.UImanager.process_events(event):
                     if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                        if event.ui_element is self.UI_n_letter[1]:
-                            self.n_letter += 1
-                            self.UI_n_letter[0].set_text(str(self.n_letter))
-                        if event.ui_element is self.UI_n_letter[2]:
-                            if self.n_letter > 0:
-                                self.n_letter -= 1
-                            self.UI_n_letter[0].set_text(str(self.n_letter))
+                        for i in range(len(self.UIChoice_number)):
+                            if event.ui_element is self.UIChoice_number[i].UI[1]:
+                                self.UIChoice_number[i].Up()
+                            if event.ui_element is self.UIChoice_number[i].UI[2]:
+                                self.UIChoice_number[i].Down()
 
             self.UImanager.update(time_delta/1000)
             self.UImanager.draw_ui(self.screen)
